@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-
+# from champion_webapp import db
 
 
 class RegistrationForm(FlaskForm):
@@ -26,6 +26,7 @@ class RegistrationForm(FlaskForm):
 		)
 
 	submit = SubmitField('Sign Up')
+
 
 
 
