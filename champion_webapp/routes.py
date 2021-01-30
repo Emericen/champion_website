@@ -35,7 +35,7 @@ def home():
 
 @app.route("/store")
 def store():
-	return render_template('store.html', title='Store')
+	return render_template('store.html', title='Store', unowned=db.get_unowned_champion())
 
 
 

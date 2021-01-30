@@ -1,8 +1,14 @@
 {% extends "layout.html" %}
 {% block content %}
-
-<h1>Store Page</h1>
-
+{% for champion in unowned %}
+<div class="card" style="width: 120px;">
+	<img src="{{ champion['thumbnail'] }}" class="card-img-top, champion-thumbnail" alt="...">
+	<div class="card-body">
+		<h5 class="card-title">{{ champion['name'] }}</h5>
+		<a href="#" class="btn btn-primary">Add</a>
+	</div>
+</div>
+{% endfor %}
 {% endblock content %}
 
 

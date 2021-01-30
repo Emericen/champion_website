@@ -92,3 +92,9 @@ a.article-title:hover {
   transform: translate(-50%, -50%);
 }
 
+
+.champion-thumbnail {
+  width: 120px;
+  height: 120px;
+}
+

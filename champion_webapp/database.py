@@ -1,77 +1,11 @@
-# import random
-# import string
 import leancloud
-# from os import walk
-
-# class database:
-	# def __init__(self):
-	# 	self._user = [
-	# 		{
-	# 			'ID': '8ZZS9XQI0B',
-	# 			'username':'positino',
-	# 			'password':'680822dd'
-	# 		},
-	# 		{
-	# 			'ID': 'BCPU6Y99NU',
-	# 			'username':'proveigar',
-	# 			'password':'qq562966969'
-	# 		},
-	# 		{
-	# 			'ID': '9HKELFRM9A',
-	# 			'username':'jiao1',
-	# 			'password':'123123ss'
-	# 		}
-	# 	]
-
-	# 	f = []
-	# 	for (dirpath, dirnames, filenames) in walk('assets/'):
-	# 		f.extend(filenames)
-	# 		break
-
-	# 	self.champions = [
-	# 		{
-	# 			'ID':''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)),
-	# 			'name':filename[:-4],
-	# 			'profile':'assets/' + filename
-	# 		} for filename in f
-	# 	]
-
-
-	# 	self.ownership = [
-	# 		{
-	# 			'user_id': '8ZZS9XQI0B',
-	# 			'champion_id': self.champions[137]['ID']	# vladimir
-	# 		},
-	# 		{
-	# 			'user_id': '8ZZS9XQI0B',
-	# 			'champion_id': self.champions[30]['ID']		# fizz
-	# 		},
-	# 		{
-	# 			'user_id': '8ZZS9XQI0B',
-	# 			'champion_id': self.champions[45]['ID']		# jayce
-	# 		},
-	# 		{
-	# 			'user_id': 'BCPU6Y99NU',
-	# 			'champion_id': self.champions[132]['ID']	# veigar
-	# 		},
-	# 		{
-	# 			'user_id': 'BCPU6Y99NU',
-	# 			'champion_id': self.champions[86]['ID']		# pantheon
-	# 		},
-	# 		{
-	# 			'user_id': '9HKELFRM9A',
-	# 			'champion_id': self.champions[68]['ID']		# lux
-	# 		},
-	# 	]
-
+import json
 
 class database:
 	def __init__(self):
 		leancloud.init("aAiiV2Rde8ou80vX6YMnCvAx-9Nh9j0Va", "DW9TsPU1DjBd6TLEKXJEAe6x")
 
-
 	def current_user(self):
-		# return not leancloud.User().get_current() == None
 		return leancloud.User().get_current()
 
 
@@ -88,29 +22,81 @@ class database:
 
 
 	def logout(self):
-		pass
+		user.logout()
+
+
+	def get_champion_by_name(self, champion_name):
+		query = leancloud.Query('Champion')
+		query.equal_to('name', champion_name)
+		return query.find()[0]
 
 
 	def own_champion(self, champion_name):
-		pass
+		if self.current_user == None:
+			return
+		else:
+			Ownership = leancloud.Object.extend('Ownership')
+			new_ownership = Ownership()
+			new_ownership.set('user', self.current_user())
+			new_ownership.set('champion', self.get_champion_by_name(champion_name))
+			new_ownership.save()
 
 
-	def delete_champion():
-		pass
+	def disown_champion(self, champion_name):
+		champion_query = leancloud.Query('Champion')
+		champion_query.equal_to('name', champion_name)
+		ownership_query = leancloud.Query('Ownership')
+		ownership_query.equal_to('user', self.current_user())
+		ownership_query.matches_query('champion', champion_query)
+		result = ownership_query.find()
+		result[0].destroy()
 
 
 	def get_owned_champion(self):
-		pass
+		query = leancloud.Query('Ownership')
+		query.equal_to('user', self.current_user())
+		result = query.find()
+		champion_query = leancloud.Query('Champion')
+		return [{
+			'name': champion_query.get(entry.get('champion').id).get('name'),
+			'thumbnail': champion_query.get(entry.get('champion').id).get('thumbnail').url
+		} for entry in result]
+
+
+	def get_unowned_champion(self):
+		if self.current_user == None:
+			return self.get_all_champion()
+		else:
+			ownership_query = leancloud.Query('Ownership')
+			ownership_query.limit(154)
+			champion_query = leancloud.Query('Champion')
+			champion_query.limit(154)
+			ownership_query.equal_to('user', self.current_user())
+			owned_champion_names = [champion_query.get(entry.get('champion').id).get('name') for entry in ownership_query.find()]
+			champion_query.not_contained_in('name', owned_champion_names)
+			result = champion_query.find()
+			return [{
+				'name': entry.get('name'),
+				'thumbnail': entry.get('thumbnail').url
+			} for entry in result]
 
 
 	def get_all_champion(self):
-		pass
+		champion_query = leancloud.Query('Champion')
+		champion_query.limit(154)
+		result = champion_query.find()
+		return [{
+			'name': entry.get('name'),
+			'thumbnail': entry.get('thumbnail').url
+		} for entry in result]
 
 
 # db = database()
-# db.login('niubility','123')
-# print(db.current_user())
-# db.register('positino', '123')
+# db.get_champion_by_name('Fizz')
+# db.login('positino','680822dd')
+# print(db.get_owned_champion())
+# print(len(db.get_all_champion()))
+
 
 # try:
 # 	db.login('eddy','123')
