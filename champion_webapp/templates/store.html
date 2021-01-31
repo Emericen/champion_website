@@ -1,14 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
-{% for champion in unowned %}
-<div class="card" style="width: 120px;">
-	<img src="{{ champion['thumbnail'] }}" class="card-img-top, champion-thumbnail" alt="...">
-	<div class="card-body">
-		<h5 class="card-title">{{ champion['name'] }}</h5>
-		<a href="#" class="btn btn-primary">Add</a>
-	</div>
+<div class="row">
+	{% for champion in db.get_unowned_champion() %}
+	<div class="card" style="width: 150px; margin: 5px">
+		<img src="{{ champion['thumbnail'] }}" class="card-img-top, champion-thumbnail" alt="...">
+		<div class="card-body">
+			<h5 class="card-title" style="height: 50%">{{ champion['name'] }}</h5>
+			{% if not db.current_user() == None %}
+				<button type="button" href="" class="btn btn-primary">Add</a>
+			{% else %}
+				<button type="button" href="{{ url_for('login') }}" class="btn btn-primary">Add</a>
+			{% endif %}
+		</div>
+	</div>	
+	{% endfor %}
 </div>
-{% endfor %}
 {% endblock content %}
 
 

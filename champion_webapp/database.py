@@ -5,6 +5,9 @@ class database:
 	def __init__(self):
 		leancloud.init("aAiiV2Rde8ou80vX6YMnCvAx-9Nh9j0Va", "DW9TsPU1DjBd6TLEKXJEAe6x")
 
+	def is_logged_in(self):
+		return not leancloud.User().get_current() is None
+
 	def current_user(self):
 		return leancloud.User().get_current()
 
@@ -91,9 +94,24 @@ class database:
 		} for entry in result]
 
 
+	def get_user_profile(self):
+		if self.current_user() is not None:
+			return {
+				'username': self.current_user().get('username'),
+				'owned': self.get_owned_champion(),
+				'unowned': self.get_unowned_champion()
+			}
+		else:
+			return None
+
 # db = database()
-# db.get_champion_by_name('Fizz')
-# db.login('positino','680822dd')
+# print(db.is_logged_in())
+# db.login('positino', '680822dd')
+# print(db.is_logged_in())
+
+
+# print(db.current_user() == None)
+
 # print(db.get_owned_champion())
 # print(len(db.get_all_champion()))
 
