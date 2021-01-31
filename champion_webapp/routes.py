@@ -31,7 +31,7 @@ def context_processor():
 
 
 
-	return dict(is_logged_in)
+	return dict(user:)
 
 
 @app.route("/")
